@@ -4,8 +4,11 @@ import sendResponse from '../../utils/sendRespone';
 import { PostServices } from './post.service';
 
 const createPosts = catchAsync(async (req, res) => {
-  const { user, content } = JSON.parse(req.body.data);
+  // Parse the form data 'data' field
+  const { user, content } = JSON.parse(req.body.data); 
+  console.log(user);
 
+  // Validate user and content
   if (!user || !content) {
     return res.status(400).json({
       success: false,
@@ -13,18 +16,34 @@ const createPosts = catchAsync(async (req, res) => {
     });
   }
 
+  // Access the files, which could be either an object or an array
+  let images: Express.Multer.File[] = [];
+
+  if (Array.isArray(req.files)) {
+    // If files are an array
+    images = req.files as Express.Multer.File[];
+  } else if (req.files && typeof req.files === 'object') {
+    // If files are in an object format, cast and concatenate all the arrays of files
+    images = Object.values(req.files).flat() as Express.Multer.File[];
+  }
+
+  // Call the service to handle the post creation
   const result = await PostServices.creatPostInDB(
-    { user, content, ...req.body },
-    req.file,
+    { user, content },
+    images 
   );
 
+  // Send the response back to the client
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Post is created successfully',
+    message: 'Post created successfully',
     data: result,
   });
 });
+
+
+
 const getAllPosts = catchAsync(async (req, res) => {
   const result = await PostServices.getAllPostsFromDB();
 

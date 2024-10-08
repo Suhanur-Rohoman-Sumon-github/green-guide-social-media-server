@@ -7,11 +7,14 @@ import httpStatus from 'http-status';
 
 const creatPostInDB = async (
   payload: TPost,
-  image: Express.Multer.File | undefined,
+  images: Express.Multer.File[] | undefined,
 ) => {
-  const imageUrl = image?.path;
-  const newData = { ...payload, imageUrl };
-  const result = PostModel.create(newData);
+
+
+  const imageUrls = images ? images.map(image => image.path) : []; 
+  const newData = { ...payload, imageUrls }; 
+
+  const result = await PostModel.create(newData);
   return result;
 };
 const getAllPostsFromDB = async () => {

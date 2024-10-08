@@ -1,11 +1,13 @@
 import express from 'express';
 
 import { PostsControllers } from './post.controller';
-import { multerUploads } from '../../config/multer.config';
+import { multerUpload } from '../../config/multer.config';
+
+
 
 const router = express.Router();
 
-router.post('/', multerUploads.single('images'), PostsControllers.createPosts);
+router.post('/', multerUpload.array('images'), PostsControllers.createPosts);
 router.get('/', PostsControllers.getAllPosts);
 router.get('/:id', PostsControllers.getSinglePosts);
 router.patch('/:postId', PostsControllers.addComments);

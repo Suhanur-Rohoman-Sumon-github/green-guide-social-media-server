@@ -5,6 +5,7 @@ import { friendRequestsServices } from "./friends.services";
 
 const sendFriendRequests = catchAsync(async (req, res) => {
      const { sender, receiver } = req.body.friends;
+     
    
     const result = await friendRequestsServices.sendFriendRequestsFromDB({
         sender,

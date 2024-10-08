@@ -18,10 +18,10 @@ export type TPost = {
   _id?: ObjectId;
   user: ObjectId;
   content: string;
-  imageUrl?: string;
+  imageUrls?: string[];
   likes?: ObjectId[];
   comments?: TComment[];
   createdAt?: Date;
-  isReacted: boolean;
+  isReacted?: boolean;
   shares?: TShare[];
 };

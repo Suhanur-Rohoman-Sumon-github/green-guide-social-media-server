@@ -49,14 +49,73 @@ const createAdmin = catchAsync(async (req, res) => {
   });
 });
 const getMe = catchAsync(async (req, res) => {
-  const { userId, role } = req.user;
+ const userId = req.params.userId
+  
 
-  const result = await UserServices.getMe(userId, role);
+  const result = await UserServices.getMe(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'user  retrieve successfully',
+    data: result,
+  });
+});
+const updateProfilePicture = catchAsync(async (req, res) => {
+  const userId = req.params.userId
+  const profilePicture = req.file
+  
+
+  const result = await UserServices.updateProfilePictureInDb(userId,profilePicture );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user  profile picture updated successfully',
+    data: result,
+  });
+});
+
+const updateCoverPhoto = catchAsync(async (req, res) => {
+  const userId = req.params.userId
+  const coverPhoto = req.file
+  
+  
+
+  const result = await UserServices.updateCoverPhotoFromDb(userId,coverPhoto );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user  cover photo updated successfully',
+    data: result,
+  });
+});
+const updateBio = catchAsync(async (req, res) => {
+  const userId = req.params.userId
+  const bio = req.body.bio
+
+  const result = await UserServices.updateBio(userId,bio );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user  profile picture updated successfully',
+    data: result,
+  });
+});
+const unfriendUser = catchAsync(async (req, res) => {
+  const userId = req.params.userId
+ const friendId = req.params.friendId
+
+ console.log(friendId);
+
+  const result = await UserServices.unfriendAUserInDB(userId,friendId );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user  profile picture updated successfully',
     data: result,
   });
 });
@@ -66,5 +125,9 @@ export const userControllers = {
   createAdmin,
   getMe,
   getAllUser,
-  getMyFriends
+  getMyFriends,
+  updateProfilePicture,
+  updateCoverPhoto,
+  updateBio,
+  unfriendUser
 };

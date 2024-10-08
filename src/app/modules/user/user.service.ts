@@ -14,6 +14,76 @@ const creteUserInDB = async (payload: TUser) => {
 
   return result;
 };
+const updateProfilePictureInDb = async (userId:string,profilePicture:Express.Multer.File | undefined) => {
+  
+    if (!profilePicture) {
+    throw new Error('No profile picture provided');
+  }
+
+  
+  const profilePictureUrl = profilePicture.path; 
+
+  
+  const updatedUser = await userModel.findByIdAndUpdate(
+    userId,
+    { profilePicture: profilePictureUrl },
+    { new: true } 
+  );
+
+  if (!updatedUser) {
+    throw new Error('User not found');
+  }
+  return updatedUser
+
+};
+const updateCoverPhotoFromDb = async (userId:string,coverPhoto:Express.Multer.File | undefined) => {
+  
+    if (!coverPhoto) {
+    throw new Error('No cover phot given');
+  }
+  
+  const coverPhotoUrl = coverPhoto.path; 
+  
+  const updatedUser = await userModel.findByIdAndUpdate(
+    userId,
+    { coverPhoto: coverPhotoUrl },
+    { new: true } 
+  );
+
+  if (!updatedUser) {
+    throw new Error('User not found');
+  }
+  return updatedUser
+
+};
+const updateBio = async (userId:string,bio:string) => {
+  
+  const updatedUser = await userModel.findByIdAndUpdate(
+    userId,
+    { bio: bio },
+    { new: true } 
+  );
+
+  if (!updatedUser) {
+    throw new Error('User not found');
+  }
+  return updatedUser
+
+};
+const unfriendAUserInDB = async (userId: string, friendId: string) => {
+
+  const updatedUser = await userModel.findByIdAndUpdate(
+    userId,
+    { $pull: { friends: friendId } }, 
+    { new: true } 
+  );
+
+  if (!updatedUser) {
+    throw new Error('User not found');
+  }
+
+  return updatedUser;
+};
 
 // TODO:add user id to removed current user send requests
 const getAllUserFromDb = async () => {
@@ -24,7 +94,7 @@ const getAllUserFromDb = async () => {
 const getMyFriendsFromDB = async (userId:string) => {
   const userWithFriends = await userModel
       .findById(userId)
-      .populate('friends', 'name email profilePicture') 
+      .populate('friends', 'name email profilePicture _id') 
       .exec();
 
     if (!userWithFriends) {
@@ -33,12 +103,10 @@ const getMyFriendsFromDB = async (userId:string) => {
 
     return userWithFriends.friends;
 };
-const getMe = async (userId: string, role: string) => {
-  let result: object | null = {};
-  if (role === 'user') {
-    result = await userModel.findOne({ id: userId });
-  }
+const getMe = async (userId:string) => {
 
+  
+   const result = await userModel.findById(userId)
   return result;
 };
 const createAdminIntoDB = async (payload: TAdmin) => {
@@ -89,5 +157,9 @@ export const UserServices = {
   createAdminIntoDB,
   getMe,
   getAllUserFromDb,
-  getMyFriendsFromDB
+  getMyFriendsFromDB,
+  updateProfilePictureInDb,
+  updateCoverPhotoFromDb,
+  updateBio,
+  unfriendAUserInDB
 };

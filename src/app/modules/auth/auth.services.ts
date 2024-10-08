@@ -24,10 +24,11 @@ const loginUser = async (payload: TLoginUser) => {
     _id: isUserExists._id,
     userId: isUserExists.id,
     role: isUserExists.role,
-    userName: isUserExists.username,
+    username: isUserExists.username,
     name: isUserExists.name,
     profilePicture: isUserExists.profilePicture,
     email: isUserExists.email,
+    currentState:isUserExists.currentState
   };
 
   const accessToken = createToken(
