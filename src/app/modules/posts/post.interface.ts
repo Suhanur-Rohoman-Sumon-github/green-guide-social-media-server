@@ -25,4 +25,6 @@ export type TPost = {
   isReacted?: boolean;
   shares?: TShare[];
   isDeleted?:boolean
+  category:string
+  postType:string
 };

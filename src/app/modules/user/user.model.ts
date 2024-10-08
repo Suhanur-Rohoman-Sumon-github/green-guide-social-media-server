@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
-import { TUser } from './user.interface';
+import { TUser, TUserModel } from './user.interface';
+import bcryptjs from 'bcryptjs';
+
 
 const userSchema = new mongoose.Schema<TUser>(
   {
@@ -41,4 +43,25 @@ const userSchema = new mongoose.Schema<TUser>(
   },
 );
 
-export const userModel = mongoose.model('User', userSchema);
+// Add the static methods to the userSchema
+userSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await this.findOne({ email }).select('+password');
+};
+
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword: string,
+  hashedPassword: string
+) {
+  return await bcryptjs.compare(plainTextPassword, hashedPassword);
+};
+
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: number,
+  jwtIssuedTimestamp: number
+) {
+  const passwordChangedTime = new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
+};
+
+// Export the model with the correct type
+export const userModel = mongoose.model<TUser, TUserModel>('User', userSchema);

@@ -1,5 +1,5 @@
 import { Model, Types } from 'mongoose';
-import { User_Role } from './user.constant';
+import { User_Role, USER_STATUS } from './user.constant';
 
 export type TUser = {
   _id?: Types.ObjectId; 
@@ -23,12 +23,20 @@ export type TUser = {
   isDeleted: boolean;
   currentState: 'pro' | 'free';
   myFavorite: Types.ObjectId[]; 
+  status: keyof typeof USER_STATUS;
 };
 
-// Replacing interface with type and using intersection type
-export type UserModels = Model<TUser> & {
-  isUserExistFindByEmail(email: string): Promise<TUser | null>;
-  isPasswordMatched(password: string, hashedPassword: string): Promise<boolean>;
-};
+export type TUserModel = {
+  isUserExistsByEmail(id: string): Promise<TUser>;
+  isPasswordMatched(
+    plainTextPassword: string,
+    hashedPassword: string
+  ): Promise<boolean>;
+  isJWTIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number
+  ): boolean;
+} & Model<TUser>
+
 
 export type TUserRol = keyof typeof User_Role;

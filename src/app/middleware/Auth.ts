@@ -9,14 +9,17 @@ const Auth = (...requiredRoles: TUserRol[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+   
+
+    if (!authHeader ) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
         'Unauthorized access detected',
       );
     }
 
-    const token = authHeader.split(' ')[1];
+    const token = authHeader
+    console.log(token);
     if (!token) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,
@@ -47,7 +50,7 @@ const Auth = (...requiredRoles: TUserRol[]) => {
       });
     }
 
-    console.log(decoded);
+   
 
     req.user = decoded;
     next();

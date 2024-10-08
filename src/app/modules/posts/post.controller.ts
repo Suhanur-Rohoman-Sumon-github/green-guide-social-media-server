@@ -5,7 +5,7 @@ import { PostServices } from './post.service';
 
 const createPosts = catchAsync(async (req, res) => {
   // Parse the form data 'data' field
-  const { user, content } = JSON.parse(req.body.data); 
+  const { user, content, category,postType} = JSON.parse(req.body.data); 
   console.log(user);
 
   // Validate user and content
@@ -29,7 +29,7 @@ const createPosts = catchAsync(async (req, res) => {
 
   // Call the service to handle the post creation
   const result = await PostServices.creatPostInDB(
-    { user, content },
+    { user, content,category,postType },
     images 
   );
 
@@ -46,7 +46,8 @@ const createPosts = catchAsync(async (req, res) => {
 
 const getAllPosts = catchAsync(async (req, res) => {
    const query = req.query
-   console.log(query);
+  
+  
   const result = await PostServices.getAllPostsFromDB(query);
 
   sendResponse(res, {

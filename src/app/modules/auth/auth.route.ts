@@ -18,6 +18,11 @@ router.post(
   validateRequest(userValidation.createUserValidationSchema),
   userControllers.createUser,
 );
+
+router.post(
+  '/change-password',
+  AuthControllers.changePassword
+);
 router.post('/refresh-token', AuthControllers.getRefreshToken);
 
 export const authRouter = router;

@@ -21,7 +21,7 @@ const creatPostInDB = async (
   return result;
 };
 const getAllPostsFromDB = async (query: Record<string, unknown>) => {
-  console.log(query);
+  
   const PostsQuery = new QueryBuilder(PostModel.find(), query)
     .search(postSearchableFields)
     .filter()
