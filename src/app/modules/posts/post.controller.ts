@@ -159,6 +159,37 @@ const getFavoritePosts = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const deleteMyPosts = catchAsync(async (req, res) => {
+  
+ const postId = req.params.postId
+  const userId = req.params.userId;
+
+  const result = await PostServices.deleteMyPostsFromDb(postId,userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'my post deleted successfully',
+    data: result,
+  });
+});
+const deleteSharedPosts = catchAsync(async (req, res) => {
+  const postId = req.params.postId
+  const userId = req.params.userId;
+
+ 
+
+  const result = await PostServices.deleteSharedPost(postId,
+    userId
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'my post deleted successfully',
+    data: result,
+  });
+});
 
 export const PostsControllers = {
   createPosts,
@@ -170,5 +201,7 @@ export const PostsControllers = {
   getMyposts,
   sharePosts,
   addToFavorite,
-  getFavoritePosts
+  getFavoritePosts,
+  deleteMyPosts,
+  deleteSharedPosts
 };

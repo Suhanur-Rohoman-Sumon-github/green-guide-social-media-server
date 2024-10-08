@@ -26,6 +26,7 @@ const postSchema = new mongoose.Schema<TPost>(
         contents: { type: String },
       },
     ],
+    isDeleted:{type:Boolean,default:false}
   },
   {
     timestamps: true,

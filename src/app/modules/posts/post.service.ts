@@ -4,6 +4,7 @@ import { PostModel } from './post.model';
 import { userModel } from '../user/user.model';
 import AppError from '../../error/AppEroor';
 import httpStatus from 'http-status';
+import { Types } from 'mongoose'; 
 
 const creatPostInDB = async (
   payload: TPost,
@@ -98,24 +99,27 @@ const isReactedGetFromDB = async (userId: string, postId: string) => {
 };
 
 const getUserPostsFromDB = async (userId: string) => {
-  
   const objectId = new mongoose.Types.ObjectId(userId);
 
-  
   const createdPosts = await PostModel.find({ user: objectId }).populate(
     'user',
   );
 
-  
   const sharedPosts = await PostModel.find({ 'shares.user': objectId })
     .populate('user')
     .populate('shares.user', 'username'); 
 
-  
-  const allPosts = [...createdPosts, ...sharedPosts];
+    const formattedCreatedPosts = createdPosts.map(post => ({
+    ...post.toObject(), 
+    postType: 'created', 
+  }));
 
- 
+  const formattedSharedPosts = sharedPosts.map(post => ({
+    ...post.toObject(), 
+    postType: 'shared', 
+  }));
 
+    const allPosts = [...formattedCreatedPosts, ...formattedSharedPosts];
   return allPosts;
 };
 
@@ -178,7 +182,7 @@ const addFavoritePostsFromDB = async (
   await user.save();
 };
 const getFavoritePostsFromDB = async (userId: string) => {
-  // Fetch the user by userId and populate the 'myFavorite' field with post details
+ 
   const user = await userModel
     .findById(userId)
     .populate({
@@ -191,14 +195,47 @@ const getFavoritePostsFromDB = async (userId: string) => {
       },
     });
 
-  // Check if user exists
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  // Return the populated favorite posts
+ 
   return user.myFavorite;
 };
+const deleteMyPostsFromDb = async (postId: string, userId: string) => {
+  const post = await PostModel.findOne({ _id: postId, user: userId });
+  if (!post) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Post not found or not authorized');
+  }
+  post.isDeleted = true;
+  await post.save();
+  return post;
+};
+
+
+const deleteSharedPost = async (postId: string, userId: string) => {
+
+  
+
+  
+  const updatedPost = await PostModel.findOneAndUpdate(
+    { _id: postId, 'shares.user': userId }, 
+    { $pull: { shares: { user: userId } } }, 
+    { new: true } 
+  );
+
+ 
+  if (!updatedPost) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Post not found or not shared by this user');
+  }
+
+  
+  return updatedPost;
+};
+
+
+
+
 
 export const PostServices = {
   creatPostInDB,
@@ -210,5 +247,7 @@ export const PostServices = {
   getUserPostsFromDB,
   sharePostFromDb,
   addFavoritePostsFromDB,
-  getFavoritePostsFromDB
+  getFavoritePostsFromDB,
+  deleteMyPostsFromDb,
+  deleteSharedPost
 };

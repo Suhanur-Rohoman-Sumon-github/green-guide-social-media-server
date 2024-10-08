@@ -17,6 +17,8 @@ router.get('/my-profile/:userId', PostsControllers.getMyposts);
 router.patch('/share/:postId/:userId', PostsControllers.sharePosts);
 router.patch('/addFavorite/:postId/:userId', PostsControllers.addToFavorite);
 router.get('/All-Favorite/:userId', PostsControllers.getFavoritePosts);
+router.delete('/delete-myPost/:postId/:userId', PostsControllers.deleteMyPosts);
+router.delete('/delete-sharedPosts/:postId/:userId', PostsControllers.deleteSharedPosts);
 
 // router.post('/refresh-token', AuthControllers.getRefreshToken);
 

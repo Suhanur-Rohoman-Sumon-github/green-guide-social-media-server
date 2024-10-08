@@ -24,4 +24,5 @@ export type TPost = {
   createdAt?: Date;
   isReacted?: boolean;
   shares?: TShare[];
+  isDeleted?:boolean
 };
