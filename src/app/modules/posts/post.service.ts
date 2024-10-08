@@ -4,7 +4,9 @@ import { PostModel } from './post.model';
 import { userModel } from '../user/user.model';
 import AppError from '../../error/AppEroor';
 import httpStatus from 'http-status';
-import { Types } from 'mongoose'; 
+import QueryBuilder from '../../builder/QueryBuilder';
+import { postSearchableFields } from './post.constant';
+
 
 const creatPostInDB = async (
   payload: TPost,
@@ -18,8 +20,15 @@ const creatPostInDB = async (
   const result = await PostModel.create(newData);
   return result;
 };
-const getAllPostsFromDB = async () => {
-  const result = PostModel.find().populate('user');
+const getAllPostsFromDB = async (query: Record<string, unknown>) => {
+  console.log(query);
+  const PostsQuery = new QueryBuilder(PostModel.find(), query)
+    .search(postSearchableFields)
+    .filter()
+    .sort()
+    .fields()
+    .paginate();
+  const result = await PostsQuery.modelQuery.populate('user');
   return result;
 };
 const getSinglePostsFromDB = async (postId: string) => {
