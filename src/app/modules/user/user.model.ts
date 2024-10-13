@@ -43,6 +43,15 @@ const userSchema = new mongoose.Schema<TUser>(
   },
 );
 
+userSchema.pre<TUser>('save', async function (next) {
+  // Only hash the password if it has been modified (or is new)
+ 
+    const salt = await bcryptjs.genSalt(10); 
+    this.password = await bcryptjs.hash(this.password, salt);
+  
+  next(); // Call the next middleware
+});
+
 // Add the static methods to the userSchema
 userSchema.statics.isUserExistsByEmail = async function (email: string) {
   return await this.findOne({ email }).select('+password');
