@@ -2,6 +2,7 @@ import express from 'express';
 import { userControllers } from './user.controller';
 import { multerUpload } from '../../config/multer.config';
 
+
 const router = express.Router();
 
 // Admin creation route

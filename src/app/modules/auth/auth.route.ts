@@ -23,6 +23,17 @@ router.post(
   '/change-password',
   AuthControllers.changePassword
 );
+router.post(
+  '/forget-password',
+  AuthControllers.forgetPassword,
+);
+router.post(
+  '/reset-password',
+  
+  AuthControllers.resetPassword,
+);
 router.post('/refresh-token', AuthControllers.getRefreshToken);
+
+
 
 export const authRouter = router;

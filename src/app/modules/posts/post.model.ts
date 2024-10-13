@@ -3,7 +3,7 @@ import { TPost } from './post.interface';
 
 const postSchema = new mongoose.Schema<TPost>(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     content: { type: String, required: true },
     category: { type: String, required: true },
     postType: { type: String, required: true },
@@ -34,5 +34,11 @@ const postSchema = new mongoose.Schema<TPost>(
     timestamps: true,
   },
 );
+
+
+
+postSchema.pre(['find', 'findOne'], function () {
+  this.where({ isDeleted: false });
+});
 
 export const PostModel = mongoose.model('Post', postSchema);

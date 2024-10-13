@@ -18,4 +18,5 @@ export default {
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
   stripe_secret: process.env.Stripe_secret_key,
+  reset_pass_ui_link: process.env.RESET_PASS_UI_LINK,
 };

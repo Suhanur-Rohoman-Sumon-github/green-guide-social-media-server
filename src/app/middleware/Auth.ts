@@ -19,7 +19,7 @@ const Auth = (...requiredRoles: TUserRol[]) => {
     }
 
     const token = authHeader
-    console.log(token);
+   
     if (!token) {
       throw new AppError(
         httpStatus.UNAUTHORIZED,

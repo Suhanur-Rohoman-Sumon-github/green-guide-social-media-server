@@ -6,13 +6,13 @@ import { PostServices } from './post.service';
 const createPosts = catchAsync(async (req, res) => {
   // Parse the form data 'data' field
   const { user, content, category,postType} = JSON.parse(req.body.data); 
-  console.log(user);
+
 
   // Validate user and content
   if (!user || !content) {
     return res.status(400).json({
       success: false,
-      message: 'User ID and content are required.',
+      message: ' Descriptions  are required. ',
     });
   }
 
@@ -194,6 +194,49 @@ const deleteSharedPosts = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const updatePost = catchAsync(async (req, res) => {
+  const postId = req.params.postId;
+ 
+
+  const { content, category, postType } = JSON.parse(req.body.data);
+  
+
+
+  if (!content) {
+    return res.status(400).json({
+      success: false,
+      message: "Content is required for updating the post.",
+    });
+  }
+
+ 
+  let images: Express.Multer.File[] = [];
+  
+
+  if (Array.isArray(req.files)) {
+   
+    images = req.files as Express.Multer.File[];
+  } else if (req.files && typeof req.files === "object") {
+  
+    images = Object.values(req.files).flat() as Express.Multer.File[];
+  }
+
+  
+  const result = await PostServices.updatePostInDB(
+    postId,
+    { content, category, postType },
+    images
+  );
+
+  // Send the response back to the client
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Post updated successfully",
+    data: result,
+  });
+});
+
 
 export const PostsControllers = {
   createPosts,
@@ -207,5 +250,6 @@ export const PostsControllers = {
   addToFavorite,
   getFavoritePosts,
   deleteMyPosts,
-  deleteSharedPosts
+  deleteSharedPosts,
+  updatePost
 };

@@ -40,8 +40,7 @@ const getSinglePostsFromDB = async (postId: string) => {
   return result;
 };
 const addCommentsInDB = async (postId: string, commentData: TComment) => {
-  console.log(commentData);
-  console.log(postId);
+  
   const updatedPost = await PostModel.findByIdAndUpdate(
     postId,
     {
@@ -66,7 +65,7 @@ const addLikesIntoDB = async (postId: string, userId: string) => {
     hasUserLiked = post.likes.some((like) => like.toString() === userId);
   }
 
-  console.log(hasUserLiked);
+  
 
   let updatedPost;
 
@@ -212,14 +211,24 @@ const getFavoritePostsFromDB = async (userId: string) => {
   return user.myFavorite;
 };
 const deleteMyPostsFromDb = async (postId: string, userId: string) => {
-  const post = await PostModel.findOne({ _id: postId, user: userId });
+  console.log("Post ID:", postId);
+  console.log("User ID:", userId);
+
+  // Find and update the post in one operation
+  const post = await PostModel.findOneAndUpdate(
+    { _id: postId, user: userId }, // Conditions to find the post
+    { isDeleted: true },           // Update operation
+    { new: true }                  // Option to return the updated document
+  );
+
+  // Check if the post was found and updated
   if (!post) {
     throw new AppError(httpStatus.NOT_FOUND, 'Post not found or not authorized');
   }
-  post.isDeleted = true;
-  await post.save();
-  return post;
+
+  return post; // Optionally return the updated post
 };
+
 
 
 const deleteSharedPost = async (postId: string, userId: string) => {
@@ -242,6 +251,43 @@ const deleteSharedPost = async (postId: string, userId: string) => {
   return updatedPost;
 };
 
+const updatePostInDB = async (
+  postId: string, 
+  payload: Partial<TPost>,  // Partial allows updating only specific fields
+  images: Express.Multer.File[] | undefined,
+) => {
+  // Fetch the post by postId to ensure it exists
+  const post = await PostModel.findById(postId);
+  if (!post) {
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  // If images are provided, map their paths
+  const imageUrls = images ? images.map((image) => image.path) : post.imageUrls;
+
+ 
+  const updatedData = {  
+    ...payload, 
+    imageUrls, 
+  };
+
+  // Find and update the post in the database
+  const updatedPost = await PostModel.findByIdAndUpdate(
+    postId,
+    updatedData,
+    { new: true, runValidators: true } 
+  );
+
+  
+
+  if (!updatedPost) {
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to update post");
+  }
+
+  return updatedPost;
+};
+
+
 
 
 
@@ -258,5 +304,6 @@ export const PostServices = {
   addFavoritePostsFromDB,
   getFavoritePostsFromDB,
   deleteMyPostsFromDb,
-  deleteSharedPost
+  deleteSharedPost,
+  updatePostInDB
 };
